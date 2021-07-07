@@ -1,0 +1,28 @@
+{
+  "name": "dev-camper-api",
+  "version": "1.0.0",
+  "description": "Devcamper backend API",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server",
+    "dev": "nodemon server"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mohammedbakr/dev-camper-api.git"
+  },
+  "keywords": [],
+  "author": "Mohamed Bakr",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mohammedbakr/dev-camper-api/issues"
+  },
+  "homepage": "https://github.com/mohammedbakr/dev-camper-api#readme",
+  "dependencies": {
+    "dotenv": "^10.0.0",
+    "express": "^4.17.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.9"
+  }
+}
