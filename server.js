@@ -2,21 +2,26 @@ const express = require('express')
 const dotenv = require('dotenv')
 const morgan = require('morgan')
 
-const app = express()
-
-// Load env vars
-dotenv.config({ path: './config/config.env' })
-
-// Dev logging middleware
-if (process.env.NODE_ENV === 'development') app.use(morgan('dev'))
-
-// Init Routes
 // Routes files
 const authRoutes = require('./routes/v1/auth')
 const usersRoutes = require('./routes/v1/user')
 const bootcampsRoutes = require('./routes/v1/bootcamp')
 const coursesRoutes = require('./routes/v1/course')
 const reviewsRoutes = require('./routes/v1/review')
+// MongoDb file
+const connectDB = require('./config/db')
+
+// Load env vars
+dotenv.config({ path: './config/config.env' })
+
+const app = express()
+
+// Dev logging middleware
+if (process.env.NODE_ENV === 'development') app.use(morgan('dev'))
+
+// DB Connection
+connectDB()
+
 // Mount routes
 app.use('/api/v1/auth', authRoutes)
 app.use('/api/v1/users', usersRoutes)
