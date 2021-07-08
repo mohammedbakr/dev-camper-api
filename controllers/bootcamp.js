@@ -1,29 +1,25 @@
 const mongoose = require('mongoose')
 
 const Bootcamp = require('../models/bootcamp')
+const ErrorResponse = require('../utils/errorResponse')
+const asyncHandler = require('../middleware/async')
 
-// @desc Get all bootcamps
-// @route GET /api/v1/bootcamps
-// @access Public
-exports.getBootcamps = async (req, res) => {
-  try {
-    const bootcamps = await Bootcamp.find()
+// @desc      Get all bootcamps
+// @route     GET /api/v1/bootcamps
+// @access    Public
+exports.getBootcamps = asyncHandler(async (req, res, next) => {
+  const bootcamps = await Bootcamp.find()
 
-    res
-      .status(200)
-      .json({ success: true, count: bootcamps.length, data: bootcamps })
-  } catch (err) {
-    console.log(err.message)
-
-    res.status(500).json({ success: false, msg: 'Server Error!' })
-  }
-}
+  res
+    .status(200)
+    .json({ success: true, count: bootcamps.length, data: bootcamps })
+})
 
 // @desc Create new bootcamp
 // @route POST /api/v1/bootcamps
 // @access Private
 /*
-exports.postBootcamps = async (req, res) => {
+exports.postBootcamps = async (req, res, next) => {
   const {
     name,
     description,
@@ -62,92 +58,53 @@ exports.postBootcamps = async (req, res) => {
   }
 }
 */
-exports.postBootcamps = async (req, res) => {
-  try {
-    const bootcamp = await Bootcamp.create(req.body)
+exports.postBootcamps = asyncHandler(async (req, res, next) => {
+  const bootcamp = await Bootcamp.create(req.body)
 
-    res.status(201).json({ success: true, data: bootcamp })
-  } catch (err) {
-    console.log(err.message)
+  res.status(201).json({ success: true, data: bootcamp })
+})
 
-    res.status(500).json({ success: false, msg: 'Server Error!' })
-  }
-}
+// @desc      Get single bootcamp
+// @route     GET /api/v1/bootcamps/:id
+// @access    Public
+exports.getBootcamp = asyncHandler(async (req, res, next) => {
+  const id = req.params.id
 
-// @desc Get single bootcamp
-// @route GET /api/v1/bootcamps/:id
-// @access Public
-exports.getBootcamp = async (req, res) => {
-  try {
-    const id = req.params.id
+  const bootcamp = await Bootcamp.findById(id)
 
-    if (!mongoose.Types.ObjectId.isValid(id))
-      return res.status(400).json({ success: false, msg: 'Malformed ID' })
+  if (!bootcamp)
+    return next(new ErrorResponse(`Bootcamp not found with id of ${id}`, 404))
 
-    const bootcamp = await Bootcamp.findById(id)
+  res.status(200).json({ success: true, data: bootcamp })
+})
 
-    if (!bootcamp)
-      return res
-        .status(404)
-        .json({ success: false, msg: 'Bootcamp not found.' })
+// @desc      Update single bootcamp
+// @route     PUT /api/v1/bootcamps/:id
+// @access    Private
+exports.updateBootcamp = asyncHandler(async (req, res, next) => {
+  const id = req.params.id
 
-    res.status(200).json({ success: true, data: bootcamp })
-  } catch (err) {
-    console.log(err.message)
+  const bootcamp = await Bootcamp.findByIdAndUpdate(id, req.body, {
+    new: true,
+    runValidators: true
+  })
 
-    res.status(500).json({ success: false, msg: 'Server Error!' })
-  }
-}
+  if (!bootcamp)
+    return next(new ErrorResponse(`Bootcamp not found with id of ${id}`, 404))
 
-// @desc Update single bootcamp
-// @route PUT /api/v1/bootcamps/:id
-// @access Private
-exports.updateBootcamp = async (req, res) => {
-  try {
-    const id = req.params.id
+  res.status(200).json({ success: true, data: bootcamp })
+})
 
-    if (!mongoose.Types.ObjectId.isValid(id))
-      return res.status(400).json({ success: false, msg: 'Malformed ID' })
+// @desc      Delete single bootcamp
+// @route     DELETE /api/v1/bootcamps/:id
+// @access    Private
+exports.deleteBootcamp = asyncHandler(async (req, res, next) => {
+  const id = req.params.id
 
-    const bootcamp = await Bootcamp.findByIdAndUpdate(id, req.body, {
-      new: true,
-      runValidators: true
-    })
+  const bootcamp = await Bootcamp.findByIdAndDelete(id)
 
-    if (!bootcamp)
-      return res
-        .status(404)
-        .json({ success: false, msg: 'Bootcamp not found.' })
+  if (!bootcamp)
+    return next(new ErrorResponse(`Bootcamp not found with id of ${id}`, 404))
 
-    res.status(200).json({ success: true, data: bootcamp })
-  } catch (err) {
-    console.log(err.message)
-
-    res.status(500).json({ success: false, msg: 'Server Error!' })
-  }
-}
-
-// @desc Delete single bootcamp
-// @route DELETE /api/v1/bootcamps/:id
-// @access Private
-exports.deleteBootcamp = async (req, res) => {
-  try {
-    const id = req.params.id
-
-    if (!mongoose.Types.ObjectId.isValid(id))
-      return res.status(400).json({ success: false, msg: 'Malformed ID' })
-
-    const bootcamp = await Bootcamp.findByIdAndDelete(id)
-
-    if (!bootcamp)
-      return res
-        .status(404)
-        .json({ success: false, msg: 'Bootcamp not found.' })
-
-    res.status(200).json({ success: true, data: {} })
-  } catch (err) {
-    console.log(err.message)
-
-    res.status(500).json({ success: false, msg: 'Server Error!' })
-  }
-}
+  res.status(200).json({ success: true, data: {} })
+})

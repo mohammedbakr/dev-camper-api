@@ -10,6 +10,8 @@ const coursesRoutes = require('./routes/v1/course')
 const reviewsRoutes = require('./routes/v1/review')
 // MongoDb file
 const connectDB = require('./config/db')
+// Error handler
+const errorHandler = require('./middleware/error')
 
 // Load env vars
 dotenv.config({ path: './config/config.env' })
@@ -31,6 +33,9 @@ app.use('/api/v1/users', usersRoutes)
 app.use('/api/v1/bootcamps', bootcampsRoutes)
 app.use('/api/v1/courses', coursesRoutes)
 app.use('/api/v1/reviews', reviewsRoutes)
+
+// Error handler middleware
+app.use(errorHandler)
 
 const PORT = process.env.PORT || 5000
 
