@@ -22,6 +22,9 @@ if (process.env.NODE_ENV === 'development') app.use(morgan('dev'))
 // DB Connection
 connectDB()
 
+// Body parser
+app.use(express.json())
+
 // Mount routes
 app.use('/api/v1/auth', authRoutes)
 app.use('/api/v1/users', usersRoutes)
