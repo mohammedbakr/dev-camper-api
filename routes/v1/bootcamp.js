@@ -1,6 +1,7 @@
 const express = require('express')
 
 const bootcampController = require('../../controllers/bootcamp')
+const courseRouter = require('./course')
 
 const router = express.Router()
 
@@ -15,5 +16,8 @@ router.put('/:id', bootcampController.updateBootcamp)
 router.delete('/:id', bootcampController.deleteBootcamp)
 
 router.get('/radius/:zipcode/:distance', bootcampController.getBootcampInRadius)
+
+// Includer other resource routers
+router.use('/:bootcampId/courses', courseRouter)
 
 module.exports = router
