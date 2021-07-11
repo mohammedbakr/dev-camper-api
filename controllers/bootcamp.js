@@ -2,8 +2,7 @@ const Bootcamp = require('../models/bootcamp')
 const ErrorResponse = require('../utils/errorResponse')
 const asyncHandler = require('../middleware/async')
 const geocoder = require('../utils/geocoder')
-const { startSession } = require('../models/bootcamp')
-
+const fileHelper = require('../utils/file')
 // @desc      Get all bootcamps
 // @route     GET /api/v1/bootcamps
 // @access    Public
@@ -170,6 +169,8 @@ exports.deleteBootcamp = asyncHandler(async (req, res, next) => {
   if (!bootcamp)
     return next(new ErrorResponse(`Bootcamp not found with id of ${id}`, 404))
 
+  fileHelper.deleteFile(bootcamp.photo)
+
   await bootcamp.remove()
 
   res.status(200).json({ success: true, data: {} })
@@ -202,4 +203,36 @@ exports.getBootcampInRadius = asyncHandler(async (req, res, next) => {
     count: bootcamps.length,
     data: bootcamps
   })
+})
+
+// @desc      upload bootcamp photo
+// @route     DELETE /api/v1/bootcamps/:id/photo
+// @access    Private
+exports.uploadBootcampPhoto = asyncHandler(async (req, res, next) => {
+  const id = req.params.id
+  const image = req.file
+
+  const bootcamp = await Bootcamp.findById(id)
+
+  if (!bootcamp)
+    return next(new ErrorResponse(`Bootcamp not found with id of ${id}`, 404))
+
+  if (!req.file) return next(new ErrorResponse(`Please upload an image`, 400))
+
+  if (bootcamp.photo && bootcamp.photo !== 'no-photo.jpg') {
+    fileHelper.deleteFile(bootcamp.photo)
+    bootcamp.photo = image.path
+  }
+
+  if (image.size > process.env.MAX_FILE_UPLOAD)
+    return next(
+      new ErrorResponse(
+        `Please upload an image with max size of ${process.env.MAX_FILE_UPLOAD}`,
+        400
+      )
+    )
+
+  await Bootcamp.findByIdAndUpdate(id, { photo: image.path })
+
+  res.status(200).json({ success: true, data: image.path })
 })

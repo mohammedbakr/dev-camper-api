@@ -1,3 +1,5 @@
+const path = require('path')
+
 const express = require('express')
 const dotenv = require('dotenv')
 const morgan = require('morgan')
@@ -12,6 +14,8 @@ const reviewsRoutes = require('./routes/v1/review')
 const connectDB = require('./config/db')
 // Error handler
 const errorHandler = require('./middleware/error')
+// Multer file
+const multer = require('./utils/multer')
 
 // Load env vars
 dotenv.config({ path: './config/config.env' })
@@ -26,6 +30,11 @@ connectDB()
 
 // Body parser
 app.use(express.json())
+
+// Multer
+app.use(multer)
+// Serving images as static
+app.use('/images', express.static(path.join(__dirname, 'images')))
 
 // Mount routes
 app.use('/api/v1/auth', authRoutes)

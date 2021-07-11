@@ -13,6 +13,8 @@ router.get('/:id', bootcampController.getBootcamp)
 
 router.put('/:id', bootcampController.updateBootcamp)
 
+router.put('/:id/photo', bootcampController.uploadBootcampPhoto)
+
 router.delete('/:id', bootcampController.deleteBootcamp)
 
 router.get('/radius/:zipcode/:distance', bootcampController.getBootcampInRadius)
