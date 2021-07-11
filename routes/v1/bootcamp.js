@@ -1,11 +1,17 @@
 const express = require('express')
 
+const Bootcamp = require('../../models/bootcamp')
 const bootcampController = require('../../controllers/bootcamp')
 const courseRouter = require('./course')
+const advancedresults = require('../../middleware/advancedresults')
 
 const router = express.Router()
 
-router.get('/', bootcampController.getBootcamps)
+router.get(
+  '/',
+  advancedresults(Bootcamp, 'courses'),
+  bootcampController.getBootcamps
+)
 
 router.post('/', bootcampController.postBootcamps)
 

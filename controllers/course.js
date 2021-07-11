@@ -9,30 +9,24 @@ const asyncHandler = require('../middleware/async')
 // @access    Public
 exports.getCourses = asyncHandler(async (req, res, next) => {
   const bootcampId = req.params.bootcampId
-  let query
 
   if (bootcampId) {
+    // Each bootcamp courses
     const bootcamp = await Bootcamp.findById(bootcampId)
     if (!bootcamp)
       return next(
         new ErrorResponse(`Bootcamp not found with id of ${bootcampId}`, 404)
       )
 
-    query = Course.find({ bootcamp: bootcampId })
-  } else
-    query = Course.find().populate({
-      path: 'bootcamp',
-      select: 'name description' // if I only want some properties
+    const courses = await Course.find({ bootcamp: bootcampId })
+
+    res.status(200).json({
+      success: true,
+      count: courses.length,
+      data: courses
     })
-
-  // Excuting query
-  const courses = await query
-
-  res.status(200).json({
-    success: true,
-    count: courses.length,
-    data: courses
-  })
+  } // All courses
+  else res.status(200).json(res.advancedResults)
 })
 
 // @desc      Create new course
