@@ -102,7 +102,9 @@ exports.deleteBootcamp = asyncHandler(async (req, res, next) => {
   if (!bootcamp)
     return next(new ErrorResponse(`Bootcamp not found with id of ${id}`, 404))
 
-  fileHelper.deleteFile(bootcamp.photo)
+  if (bootcamp.photo && bootcamp.photo !== 'no-photo.jpg') {
+    fileHelper.deleteFile(bootcamp.photo)
+  }
 
   await bootcamp.remove()
 

@@ -3,6 +3,7 @@ const path = require('path')
 const express = require('express')
 const dotenv = require('dotenv')
 const morgan = require('morgan')
+const cookieParser = require('cookie-parser')
 
 // Routes files
 const authRoutes = require('./routes/v1/auth')
@@ -30,6 +31,9 @@ connectDB()
 
 // Body parser
 app.use(express.json())
+
+// Cookie parser
+app.use(cookieParser())
 
 // Multer
 app.use(multer)
