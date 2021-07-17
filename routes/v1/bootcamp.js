@@ -17,7 +17,7 @@ router.get(
 router.post(
   '/',
   protect,
-  authorize(['publisher', 'admin']),
+  authorize('publisher', 'admin'),
   bootcampController.postBootcamps
 )
 

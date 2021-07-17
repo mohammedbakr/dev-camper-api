@@ -35,11 +35,20 @@ exports.getCourses = asyncHandler(async (req, res, next) => {
 exports.postCourses = asyncHandler(async (req, res, next) => {
   const bootcampId = req.params.bootcampId
   req.body.bootcamp = bootcampId
+  req.body.user = req.user.id
 
   const bootcamp = await Bootcamp.findById(bootcampId)
   if (!bootcamp)
     return next(
       new ErrorResponse(`Bootcamp not found with id of ${bootcampId}`, 404)
+    )
+
+  if (bootcamp.user.toString() !== req.user.id.toString())
+    return next(
+      new ErrorResponse(
+        `User ${req.user.name} is not authorized to add a course to bootcamp ${bootcamp.name}`,
+        403
+      )
     )
 
   const course = await Course.create(req.body)
@@ -75,6 +84,14 @@ exports.updateCourse = asyncHandler(async (req, res, next) => {
   if (!course)
     return next(new ErrorResponse(`course not found with id of ${id}`, 404))
 
+  if (course.user.toString() !== req.user.id.toString())
+    return next(
+      new ErrorResponse(
+        `User ${req.user.name} is not authorized to update the course`,
+        403
+      )
+    )
+
   course = await Course.findByIdAndUpdate(id, req.body, {
     new: true,
     runValidators: true
@@ -93,6 +110,14 @@ exports.deleteCourse = asyncHandler(async (req, res, next) => {
 
   if (!course)
     return next(new ErrorResponse(`course not found with id of ${id}`, 404))
+
+  if (course.user.toString() !== req.user.id.toString())
+    return next(
+      new ErrorResponse(
+        `User ${req.user.name} is not authorized to course the course`,
+        403
+      )
+    )
 
   await course.remove()
 

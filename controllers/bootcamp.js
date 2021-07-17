@@ -14,47 +14,8 @@ exports.getBootcamps = asyncHandler(async (req, res, next) => {
 // @desc Create new bootcamp
 // @route POST /api/v1/bootcamps
 // @access Private
-/*
-exports.postBootcamps = async (req, res, next) => {
-  const {
-    name,
-    description,
-    website,
-    phone,
-    email,
-    address,
-    careers,
-    housing,
-    jobAssistance,
-    jobGuarantee,
-    acceptGi
-  } = req.body
-
-  try {
-    const bootcamp = new Bootcamp({
-      name,
-      description,
-      website,
-      phone,
-      email,
-      address,
-      careers,
-      housing,
-      jobAssistance,
-      jobGuarantee,
-      acceptGi
-    })
-
-    const result = await bootcamp.save()
-    res.status(201).json({ msg: 'Bootcamp created successfully', data: result })
-  } catch (err) {
-    console.log(err.message)
-
-    res.status(500).json({ msg: 'Server Error!' })
-  }
-}
-*/
 exports.postBootcamps = asyncHandler(async (req, res, next) => {
+  req.body.user = req.user.id
   const bootcamp = await Bootcamp.create(req.body)
 
   res.status(201).json({ success: true, data: bootcamp })
@@ -80,13 +41,23 @@ exports.getBootcamp = asyncHandler(async (req, res, next) => {
 exports.updateBootcamp = asyncHandler(async (req, res, next) => {
   const id = req.params.id
 
-  const bootcamp = await Bootcamp.findByIdAndUpdate(id, req.body, {
-    new: true,
-    runValidators: true
-  })
+  let bootcamp = await Bootcamp.findById(id)
 
   if (!bootcamp)
     return next(new ErrorResponse(`Bootcamp not found with id of ${id}`, 404))
+
+  if (bootcamp.user.toString() !== req.user.id.toString())
+    return next(
+      new ErrorResponse(
+        `User ${req.user.name} is not authorized to update the bootcamp`,
+        403
+      )
+    )
+
+  bootcamp = await Bootcamp.findByIdAndUpdate(id, req.body, {
+    new: true,
+    runValidators: true
+  })
 
   res.status(200).json({ success: true, data: bootcamp })
 })
@@ -101,6 +72,14 @@ exports.deleteBootcamp = asyncHandler(async (req, res, next) => {
 
   if (!bootcamp)
     return next(new ErrorResponse(`Bootcamp not found with id of ${id}`, 404))
+
+  if (bootcamp.user.toString() !== req.user.id.toString())
+    return next(
+      new ErrorResponse(
+        `User ${req.user.name} is not authorized to delete the bootcamp`,
+        403
+      )
+    )
 
   if (bootcamp.photo && bootcamp.photo !== 'no-photo.jpg') {
     fileHelper.deleteFile(bootcamp.photo)
@@ -151,6 +130,14 @@ exports.uploadBootcampPhoto = asyncHandler(async (req, res, next) => {
 
   if (!bootcamp)
     return next(new ErrorResponse(`Bootcamp not found with id of ${id}`, 404))
+
+  if (bootcamp.user.toString() !== req.user.id.toString())
+    return next(
+      new ErrorResponse(
+        `User ${req.user.name} is not authorized to update the bootcamp photo`,
+        403
+      )
+    )
 
   if (!req.file) return next(new ErrorResponse(`Please upload an image`, 400))
 
