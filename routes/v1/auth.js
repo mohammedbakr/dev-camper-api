@@ -11,4 +11,8 @@ router.post('/register', authController.register)
 
 router.post('/login', authController.login)
 
+router.post('/forgetpassword', authController.forgetPassword)
+
+router.put('/resetpassword/:resettoken', authController.resetPassword)
+
 module.exports = router
