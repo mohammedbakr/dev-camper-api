@@ -7,6 +7,10 @@ const router = express.Router()
 
 router.get('/', protect, authController.getAuth)
 
+router.put('/updateprofile', protect, authController.updateProfile)
+
+router.put('/updatepassword', protect, authController.updatePassword)
+
 router.post('/register', authController.register)
 
 router.post('/login', authController.login)

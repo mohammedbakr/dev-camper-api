@@ -52,6 +52,45 @@ exports.getAuth = asyncHandler((req, res, next) => {
   res.status(200).json({ success: true, data: req.user })
 })
 
+// @desc      Update logged in user name and email
+// @route     POST /api/v1/auth/updateprofile
+// @access    Private
+exports.updateProfile = asyncHandler(async (req, res, next) => {
+  const id = req.user.id
+  const updatedProfile = {
+    name: req.body.name,
+    email: req.body.email
+  }
+
+  const user = await User.findByIdAndUpdate(id, updatedProfile, {
+    new: true,
+    runValidators: true
+  })
+
+  res.status(200).json({ success: true, data: user })
+})
+
+// @desc      Update logged in user password
+// @route     POST /api/v1/auth/updatepassword
+// @access    Private
+exports.updatePassword = asyncHandler(async (req, res, next) => {
+  const id = req.user.id
+  const currentPassword = req.body.currentpassword
+  const newPassword = req.body.newpassword
+
+  const user = await User.findById(id).select('+password')
+  if (!user) return next(new ErrorResponse('User not found', 404))
+
+  // Check password
+  if (!(await user.matchPassword(currentPassword)))
+    return next(new ErrorResponse('Incorrect current password', 422))
+
+  user.password = newPassword
+  await user.save()
+
+  sendTokenResponse(user, 200, res)
+})
+
 // @desc      Forget password
 // @route     POST /api/v1/auth/forgetpassword
 // @access    Public
