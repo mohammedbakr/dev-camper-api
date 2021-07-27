@@ -15,6 +15,9 @@ router.post('/register', authController.register)
 
 router.post('/login', authController.login)
 
+// if token is in the Cookie
+// router.get('/logout', authController.logout)
+
 router.post('/forgetpassword', authController.forgetPassword)
 
 router.put('/resetpassword/:resettoken', authController.resetPassword)

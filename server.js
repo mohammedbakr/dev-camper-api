@@ -4,6 +4,12 @@ const express = require('express')
 const dotenv = require('dotenv')
 const morgan = require('morgan')
 const cookieParser = require('cookie-parser')
+const mongoSanitize = require('express-mongo-sanitize')
+const helmet = require('helmet')
+const cors = require('cors')
+const xss = require('xss-clean')
+const rateLimit = require('express-rate-limit')
+const hpp = require('hpp')
 
 // Routes files
 const authRoutes = require('./routes/v1/auth')
@@ -34,6 +40,28 @@ app.use(express.json())
 
 // Cookie parser
 app.use(cookieParser())
+
+// Sanitize data
+app.use(mongoSanitize())
+
+// Set security headers
+app.use(helmet())
+
+// Enable CORS
+app.use(cors())
+
+// // Prevent XSS attacks
+app.use(xss())
+
+// Rate limiting
+const limiter = rateLimit({
+  windowMs: 10 * 60 * 1000,
+  max: 100
+})
+app.use(limiter)
+
+// Prevent http param pollution
+app.use(hpp())
 
 // Multer
 app.use(multer)
