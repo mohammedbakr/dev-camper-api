@@ -1,8 +1,11 @@
 const express = require('express')
 
+const courseRouter = require('./course')
+const reviewController = require('./review')
+
 const Bootcamp = require('../../models/bootcamp')
 const bootcampController = require('../../controllers/bootcamp')
-const courseRouter = require('./course')
+
 const advancedresults = require('../../middleware/advancedresults')
 const { protect, authorize } = require('../../middleware/auth')
 
@@ -48,5 +51,6 @@ router.get('/radius/:zipcode/:distance', bootcampController.getBootcampInRadius)
 
 // Includer other resource routers
 router.use('/:bootcampId/courses', courseRouter)
+router.use('/:bootcampId/reviews', reviewController)
 
 module.exports = router

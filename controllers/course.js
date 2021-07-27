@@ -79,12 +79,15 @@ exports.getCourse = asyncHandler(async (req, res, next) => {
 exports.updateCourse = asyncHandler(async (req, res, next) => {
   const id = req.params.id
 
-  let course = await Course.findById(id, req.body)
+  let course = await Course.findById(id)
 
   if (!course)
     return next(new ErrorResponse(`course not found with id of ${id}`, 404))
 
-  if (course.user.toString() !== req.user.id.toString())
+  if (
+    course.user.toString() !== req.user.id.toString() &&
+    req.user.role !== 'admin'
+  )
     return next(
       new ErrorResponse(
         `User ${req.user.name} is not authorized to update the course`,
@@ -106,15 +109,18 @@ exports.updateCourse = asyncHandler(async (req, res, next) => {
 exports.deleteCourse = asyncHandler(async (req, res, next) => {
   const id = req.params.id
 
-  const course = await Course.findById(id, req.body)
+  const course = await Course.findById(id)
 
   if (!course)
     return next(new ErrorResponse(`course not found with id of ${id}`, 404))
 
-  if (course.user.toString() !== req.user.id.toString())
+  if (
+    course.user.toString() !== req.user.id.toString() &&
+    req.user.role !== 'admin'
+  )
     return next(
       new ErrorResponse(
-        `User ${req.user.name} is not authorized to course the course`,
+        `User ${req.user.name} is not authorized to delete the course`,
         403
       )
     )
