@@ -20,7 +20,7 @@ const reviewsRoutes = require('./routes/v1/review')
 // MongoDb file
 const connectDB = require('./config/db')
 // Error handler
-const errorHandler = require('./middleware/error')
+const { notFound, errorHandler } = require('./middleware/error')
 // Multer file
 const multer = require('./utils/multer')
 
@@ -77,7 +77,8 @@ app.use('/api/v1/bootcamps', bootcampsRoutes)
 app.use('/api/v1/courses', coursesRoutes)
 app.use('/api/v1/reviews', reviewsRoutes)
 
-// Error handler middleware
+// Error handler middlewares
+app.use(notFound)
 app.use(errorHandler)
 
 const PORT = process.env.PORT || 5000

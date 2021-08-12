@@ -44,9 +44,10 @@ const importData = async () => {
     await Review.create(review)
 
     console.log('Data Imported...')
-    process.exit(1)
+    process.exit()
   } catch (err) {
     console.error(err)
+    process.exit()
   }
 }
 
@@ -59,9 +60,10 @@ const deleteData = async () => {
     await Review.deleteMany()
 
     console.log('Data Destroyed...')
-    process.exit(1)
+    process.exit()
   } catch (err) {
     console.error(err)
+    process.exit(1)
   }
 }
 

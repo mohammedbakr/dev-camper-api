@@ -1,5 +1,10 @@
 const ErrorResponse = require('../utils/errorResponse')
 
+const notFound = (req, res, next) => {
+  const error = new ErrorResponse(`Not Found - ${req.originalUrl}`, 404)
+  next(error)
+}
+
 const errorHandler = (err, req, res, next) => {
   let error = { ...err }
 
@@ -31,4 +36,5 @@ const errorHandler = (err, req, res, next) => {
     .json({ success: false, error: error.message || 'Server Error.' })
 }
 
-module.exports = errorHandler
+exports.notFound = notFound
+exports.errorHandler = errorHandler
